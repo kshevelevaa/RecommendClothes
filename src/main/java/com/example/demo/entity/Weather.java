@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 //import javax.persistence.*;
-import jakarta.persistence.*;
+
 import lombok.*;
 
 
@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Weather {
-
+    private  String name;
     private float temp;
     private int pressure;
     private float wind;

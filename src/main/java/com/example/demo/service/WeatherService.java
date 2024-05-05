@@ -56,6 +56,7 @@ public class WeatherService {
         weather.setVisibility(Integer.parseInt(weatherMap.get("visibility").toString()));
         weather.setWind(Float.parseFloat(wind.get("speed").toString()));
         weather.setClouds(Integer.parseInt(clouds.get("all").toString()));
+        weather.setName(city);
 
         if ( rain != null)
             weather.setRain(Float.parseFloat(rain.get("1h").toString()));

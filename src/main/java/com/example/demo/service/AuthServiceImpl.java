@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public JwtResponseDto getJwtDtoByAuthRequest(AuthRequestDto authRequestDto) {
-        UserDetails user = (UserDetails) userRepository.findByUsername(authRequestDto.email());
+        UserDetails user = (UserDetails) userRepository.findByUsername(authRequestDto.username());
 
         String authPassword = authRequestDto.password();
 
