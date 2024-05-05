@@ -10,6 +10,9 @@ import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -22,6 +25,13 @@ public class ClothesService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StorageProperties storageProperties;
+
+
+    public ClothesService(StorageProperties storageProperties, StorageProperties storageProperties1) {
+    }
 
     public Clothes findById(int id) {
         return clothesRepository.findById(id);
@@ -46,6 +56,20 @@ public class ClothesService {
 
         return clothesRepository.save(clothes);
 
+    }
+
+    private Clothes createImage(Clothes clothes){
+        String name = clothes.getIcon().getOriginalFilename();
+        String filePath = System.getProperty("user.dir") + Paths.get(storageProperties.getLocation()) + "\\" + name;
+        try {
+            File newImage = new File(filePath);
+            clothes.getIcon().transferTo(newImage);
+            clothes.setPictureUrl(clothes.getIcon().getOriginalFilename());
+            clothes.setIcon(null);
+        } catch (IOException e) {
+//            logger.info("не удалось создать файл");
+        }
+        return clothes;
     }
 
     public void deleteById(int id) {

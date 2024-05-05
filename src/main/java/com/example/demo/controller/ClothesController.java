@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/clothes")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ClothesController {
     @Autowired
     private ClothesService clothesService;

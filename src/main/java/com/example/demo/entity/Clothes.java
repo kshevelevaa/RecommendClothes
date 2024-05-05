@@ -5,7 +5,10 @@ package com.example.demo.entity;
 
 import com.example.demo.entity.enums.Sex;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "clothes", schema = "public")
@@ -23,7 +26,7 @@ public class Clothes {
     private String clothesName;
 
     @OneToOne
-    @JoinColumn(name = "detailed_category_id",  nullable = false)
+    @JoinColumn(name = "category_id")
     private Category categoryId;
 
     @Enumerated(EnumType.STRING)
@@ -36,5 +39,8 @@ public class Clothes {
     @ManyToOne
     @JoinColumn(name = "user_id",  nullable = false)
     private User addedBy;
+
+    @Transient
+    private MultipartFile icon;
 
 }
