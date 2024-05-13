@@ -2,26 +2,36 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ClothesDto;
 import com.example.demo.entity.Clothes;
+import com.example.demo.entity.User;
+import com.example.demo.mapper.ClothMapper;
 import com.example.demo.service.ClothesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/clothes")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequiredArgsConstructor
 public class ClothesController {
-    @Autowired
-    private ClothesService clothesService;
+    private final ClothesService clothesService;
+    private final ClothMapper clothMapper;
 
     @ResponseBody
     @GetMapping("/getByID/{id}")
-    public ResponseEntity<?> getClothesById(@PathVariable int id){
+    public ResponseEntity<?> getClothesById(@PathVariable int id) {
         Clothes clothes = clothesService.findById(id);
 
-        if (clothes != null )
+        if (clothes != null)
             return ResponseEntity.ok(clothes);
         else {
             return ResponseEntity.notFound().build();
@@ -29,24 +39,26 @@ public class ClothesController {
     }
 
     @ResponseBody
-    @GetMapping("/getByUserID/{user_id}")
-    public ResponseEntity<?> getClothesByUserId(@PathVariable int user_id){
-        List<Clothes> clothes = clothesService.findByAddedBy(user_id);
+    @GetMapping("/getByUserID")
+    public ResponseEntity<?> getClothesByUserId(@AuthenticationPrincipal User user) {
+        List<Clothes> clothes = clothesService.findByAddedBy(user.getUserId());
 
-        if (clothes != null )
-            return ResponseEntity.ok(clothes);
+        if (clothes != null)
+            return ResponseEntity.ok(clothMapper.ofEntities(clothes));
         else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/save")
-    public Clothes saveClothes(@RequestBody ClothesDto clothes){
-        return clothesService.save(clothes);
+    public ClothesDto saveClothes(@AuthenticationPrincipal User user,
+                               @RequestBody ClothesDto clothes) {
+        clothes.setAddedBy(user.getUserId());
+        return clothMapper.ofEntity(clothesService.save(clothes));
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteClothes(@PathVariable int id){
+    public void deleteClothes(@PathVariable int id) {
         Clothes clothes = clothesService.findById(id);
         if (clothes != null)
             clothesService.deleteById(id);

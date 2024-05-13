@@ -1,9 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Clothes;
+import com.example.demo.entity.User;
 import com.example.demo.service.RecommendService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -11,17 +14,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/recommend")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequiredArgsConstructor
 public class RecommendController {
+    private final RecommendService recommendService;
+    private final UserService userService;
 
-    @Autowired
-    private RecommendService recommendService;
     @ResponseBody
-    @GetMapping("/{user_id}/{city}")
-    public ResponseEntity<?> getClothesByUserId(@PathVariable int user_id,
+    @GetMapping("/{city}")
+    public ResponseEntity<?> getClothesByUserId(@AuthenticationPrincipal User user,
                                                 @PathVariable String city) throws IOException {
 
-        List<List<Clothes>> clothes = recommendService.recommendOptionalClothes(city, user_id);
+        List<List<Clothes>> clothes = recommendService.recommendOptionalClothes(city, user.getUserId());
 
         if (clothes != null )
             return ResponseEntity.ok(clothes);
@@ -30,16 +33,18 @@ public class RecommendController {
         }
     }
 
-//    @ResponseBody
-//    @GetMapping("/{user_id}/{city}")
-//    public ResponseEntity<?> getClothesByAdminId( @PathVariable String city) throws IOException {
-//
-//        List<List<Clothes>> clothes = recommendService.recommendBaseClothes(city);
-//
-//        if (clothes != null )
-//            return ResponseEntity.ok(clothes);
-//        else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+    @ResponseBody
+    @GetMapping("/public/{city}")
+    public ResponseEntity<?> getClothesByAdminId( @PathVariable String city) throws IOException {
+
+        User admin = userService.getUserByLogin("admin");
+
+        List<List<Clothes>> clothes = recommendService.recommendOptionalClothes(city, admin.getUserId());
+
+        if (clothes != null )
+            return ResponseEntity.ok(clothes);
+        else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

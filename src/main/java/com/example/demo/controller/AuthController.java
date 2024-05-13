@@ -1,27 +1,22 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AuthRequestDto;
-import com.example.demo.dto.JwtResponseDto;
+import com.example.demo.dto.AuthRq;
+import com.example.demo.dto.AuthRs;
 import com.example.demo.service.AuthService;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping(value = "/login", produces = "application/json")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
+@RequiredArgsConstructor
+@RequestMapping(value = "/login")
 public class AuthController {
-
     private final AuthService authService;
 
-    public AuthController(
-            AuthService authService) {
-        this.authService = authService;
-    }
-
-    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/auth")
-    public JwtResponseDto auth(@RequestBody AuthRequestDto authRequestDto) {
-        return authService.getJwtDtoByAuthRequest(authRequestDto);
+    public AuthRs auth(@RequestBody AuthRq authRq) {
+        return authService.authenticate(authRq.login(), authRq.password());
     }
-
 }

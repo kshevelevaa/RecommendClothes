@@ -7,6 +7,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ClothesRepository;
 import com.example.demo.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,6 @@ public class ClothesService {
         Clothes clothes = new Clothes();
         clothes.setClothesName(clothesDto.getClothesName());
         clothes.setSex(clothesDto.getSex());
-        clothes.setPictureUrl(clothesDto.getPictureUrl());
 
         Category category = categoryRepository.findById(clothesDto.getCategoryId());
         clothes.setCategoryId(category);
@@ -58,13 +58,18 @@ public class ClothesService {
 
     }
 
+    @Transactional
+    public Clothes save(Clothes clothes) {
+        return clothesRepository.save(clothes);
+    }
+
     private Clothes createImage(Clothes clothes){
         String name = clothes.getIcon().getOriginalFilename();
         String filePath = System.getProperty("user.dir") + Paths.get(storageProperties.getLocation()) + "\\" + name;
         try {
             File newImage = new File(filePath);
             clothes.getIcon().transferTo(newImage);
-            clothes.setPictureUrl(clothes.getIcon().getOriginalFilename());
+//            clothes.setPictureUrl(clothes.getIcon().getOriginalFilename());
             clothes.setIcon(null);
         } catch (IOException e) {
 //            logger.info("не удалось создать файл");

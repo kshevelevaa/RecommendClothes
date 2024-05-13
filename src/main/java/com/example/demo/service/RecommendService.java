@@ -5,12 +5,12 @@ import com.example.demo.entity.Clothes;
 import com.example.demo.entity.Weather;
 import com.example.demo.entity.enums.CategoryType;
 import com.example.demo.repository.CategoryRepository;
+import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -18,6 +18,9 @@ public class RecommendService {
 
     @Autowired
     private WeatherService weatherService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ClothesService clothesService;
@@ -28,8 +31,7 @@ public class RecommendService {
     public List<List<Clothes>> recommendBaseClothes(String city) throws IOException {
 
         Weather weather = weatherService.getWeather(city);
-//        1111111111 - id админа
-        List<Clothes> clothes = clothesService.findByAddedBy(1111111111);
+        List<Clothes> clothes = clothesService.findByAddedBy(userRepository.findByUsername("admin").getUserId());
         List<Clothes> clothesSuitable = new ArrayList<>();
         List<List<Clothes>> clothesAlmostRecommend = new ArrayList<>();
 
